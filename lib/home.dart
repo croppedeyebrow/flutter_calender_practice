@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -12,30 +13,135 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          color: Color.fromARGB(255, 49, 28, 92),
-          padding: EdgeInsets.all(14.0),
-          width: MediaQuery.of(context).size.width,
-          // height: 260,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              topRow(),
-              Padding(
-                padding: const EdgeInsets.only(top: 14.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(
-                    7,
-                    (index) => dateWidget(),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(height: 30.0, color: Color.fromARGB(255, 49, 28, 92)),
+            Container(
+              color: Color.fromARGB(255, 49, 28, 92),
+              padding: EdgeInsets.all(14.0),
+              width: MediaQuery.of(context).size.width,
+              // height: 260,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  topRow(),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 14.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(
+                        7,
+                        (index) => dateWidget(
+                          index: index,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ), // dateWidget 호출
+                  // 여기서 dateWidget을 7번 호출하여 요일을 표시합니다.
+                  // dateWidget 호출
+                ],
+              ),
+            ),
+            cardWidget(),
+            cardWidget(),
+            cardWidget(),
+            cardWidget(),
+            cardWidget(),
+            cardWidget(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class cardWidget extends StatelessWidget {
+  const cardWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(28.0),
+          child: Column(
+            children: <Widget>[
+              Text(
+                "13 : 00",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              lineGen(
+                lines: [20.0, 30.0, 40.0, 10.0],
+              ),
             ],
           ),
         ),
-      ),
+        SizedBox(width: 20.0),
+        Expanded(
+          child: Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                color: Color(0xff654f91),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12.0),
+                    bottomLeft: Radius.circular(12.0)),
+              ),
+              child: Container(
+                  color: Color(0xfffcf9f9),
+                  margin: EdgeInsets.only(left: 4.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14.0),
+                    child: Column(
+                      children: <Widget>[
+                        Row(children: <Widget>[
+                          Text("13:00~14:40"),
+                          VerticalDivider(),
+                          Text("Blue str,21"),
+                        ]),
+                        Row(
+                          children: <Widget>[
+                            Text(
+                              "Project Planning",
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xff654f91)),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ))),
+        )
+      ],
+    );
+  }
+}
+
+class lineGen extends StatelessWidget {
+  final List lines;
+
+  const lineGen({Key? key, required this.lines}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: List.generate(
+          4,
+          (index) => Container(
+                height: 2.0,
+                width: lines[index], // null 검사 후 접근
+                color: Color(0xffd0d2d8),
+                margin: EdgeInsets.symmetric(vertical: 14.0),
+              )
+          // null 일 경우 빈 컨테이너 표시
+          ),
     );
   }
 }
@@ -55,21 +161,29 @@ class _HomeViewState extends State<HomeView> {
 // -------------------------------------------------
 
 class dateWidget extends StatefulWidget {
+  final index;
+
+  const dateWidget({Key? key, this.index}) : super(key: key);
   @override
   _dateWidgetState createState() => _dateWidgetState();
 }
 
 class _dateWidgetState extends State<dateWidget> {
   bool selectDate = false;
+  var list = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // setState로 상태 변경
-        // 선택된 날짜를 변경
-        // 선택된 날짜가 있을 경우는 false
-        // 없을 경우는 true
         setState(() {
+          // 현재 선택 날짜가 있으면 현재 값을 취소하고, 새로운 날짜를 선택
+          if (selectDate) {
+            selectDate = false;
+            return;
+          }
+
+          // 현재 날짜 선택
           selectDate = !selectDate;
         });
       },
@@ -86,7 +200,7 @@ class _dateWidgetState extends State<dateWidget> {
         child: Column(
           children: [
             Text(
-              "Mo",
+              list[widget.index] ?? "",
               style: TextStyle(
                 fontWeight: selectDate ? FontWeight.normal : FontWeight.bold,
                 color: selectDate ? Color(0xff8e7daf) : Colors.white,
@@ -94,7 +208,7 @@ class _dateWidgetState extends State<dateWidget> {
               ),
             ),
             Text(
-              "10",
+              "${10 + widget.index}",
               style: TextStyle(
                 fontWeight: selectDate ? FontWeight.normal : FontWeight.bold,
                 color: selectDate ? Color(0xff8e7daf) : Colors.white,
